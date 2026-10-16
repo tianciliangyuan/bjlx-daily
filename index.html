@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#b3252c">
+<title>北京市直遴选 · 每日100题</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --red:#b3252c; --red2:#8f1d24; --ink:#1a1d24; --ink2:#3d4553; --ink3:#8a919e;
+  --bg:#f5f6f8; --card:#fff; --line:#e6e9ef;
+  --ok:#1c8a52; --okbg:#e8f6ee; --no:#d0353a; --nobg:#fdecec;
+  --blue:#1e5799; --gold:#8a6a1f;
+}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:0 12px}
+header{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 16px}
+header .t{font-size:17px;font-weight:700;letter-spacing:.5px}
+header .s{font-size:12px;opacity:.85;margin-top:2px}
+.hero{display:flex;align-items:center;gap:14px;margin-top:12px}
+.ring{width:74px;height:74px;flex:0 0 74px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .num b{font-size:19px;line-height:1}
+.ring .num span{font-size:10px;opacity:.85}
+.hstat{flex:1;font-size:12.5px;line-height:1.9}
+.hstat b{font-size:16px}
+.card{background:var(--card);border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 3px rgba(20,25,40,.06)}
+.mrow{display:flex;gap:10px}
+.mrow>*{flex:1}
+.btn{display:block;width:100%;border:0;border-radius:11px;padding:13px;font-size:15.5px;font-weight:600;
+  background:var(--red);color:#fff;text-align:center;cursor:pointer}
+.btn:active{opacity:.85}
+.btn.g{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.b{background:var(--blue)}
+.btn.sm{padding:9px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid .it{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;text-align:center;font-size:13.5px}
+.grid .it b{display:block;font-size:17px;margin-bottom:1px}
+.grid .it .l{font-size:11.5px;color:var(--ink3)}
+h2.sh{font-size:14px;margin:18px 2px 8px;color:var(--ink2);font-weight:700}
+/* 答题 */
+.qhead{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink3);padding:10px 4px}
+.qhead .cat{background:var(--red);color:#fff;border-radius:20px;padding:2px 10px;font-size:11.5px}
+.qbox{background:#fff;border-radius:12px;padding:16px 15px;box-shadow:0 1px 3px rgba(20,25,40,.06)}
+.qt{font-size:16px;line-height:1.75;font-weight:600;margin-bottom:14px}
+.opt{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin:9px 0;font-size:15px;line-height:1.6;
+  display:flex;gap:9px;cursor:pointer;background:#fff}
+.opt .k{flex:0 0 22px;height:22px;width:22px;border-radius:50%;border:1px solid var(--ink3);color:var(--ink3);
+  font-size:12.5px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.opt.sel{border-color:var(--red);background:#fff8f8}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.right .k{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wrong{border-color:var(--no);background:var(--nobg)}
+.opt.wrong .k{background:var(--no);color:#fff;border-color:var(--no)}
+.opt.dis{cursor:default}
+.exp{margin-top:12px;border-radius:10px;padding:12px 13px;font-size:14px;line-height:1.75;display:none}
+.exp.show{display:block}
+.exp .tag{display:inline-block;font-size:11.5px;border-radius:5px;padding:2px 8px;margin-right:6px;font-weight:700}
+.exp .pt{background:#eef3fa;color:var(--blue)}
+.exp .rst{background:var(--okbg);color:var(--ok)}
+.exp .rstn{background:var(--nobg);color:var(--no)}
+.exp .an{margin-top:8px;color:var(--ink2)}
+.qnav{display:flex;gap:10px;margin-top:14px}
+.qnav .btn{flex:1}
+/* 底部导航 */
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+  display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:50}
+nav a{flex:1;text-align:center;padding:8px 0 7px;font-size:11px;color:var(--ink3);text-decoration:none}
+nav a.on{color:var(--red);font-weight:700}
+nav a .ic{display:block;font-size:19px;line-height:1.2}
+.list{background:#fff;border-radius:12px;overflow:hidden}
+.list .li{padding:12px 14px;border-bottom:1px solid var(--line);font-size:14.5px;display:flex;justify-content:space-between;align-items:center}
+.list .li:last-child{border-bottom:0}
+.list .li .r{color:var(--ink3);font-size:12.5px}
+.tag2{display:inline-block;background:#f2f4f8;border-radius:4px;padding:1px 7px;font-size:11.5px;color:var(--ink2);margin-right:5px}
+.bar{height:7px;background:#eef0f4;border-radius:4px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:var(--red);border-radius:4px}
+.hide{display:none}
+input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:14px;font-family:inherit}
+.mini{font-size:12px;color:var(--ink3);line-height:1.7}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="t">北京市直遴选 · 每日 100 题</div>
+    <div class="s" id="hsub">客观题 15 分 · 九大考点模块 · 含考点与解析</div>
+    <div class="hero">
+      <div class="ring">
+        <svg width="74" height="74"><circle cx="37" cy="37" r="31" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="7"/>
+        <circle id="arc" cx="37" cy="37" r="31" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"
+          stroke-dasharray="195" stroke-dashoffset="195"/></svg>
+        <div class="num"><b id="dn">0</b><span>/ <span id="dt">100</span></span></div>
+      </div>
+      <div class="hstat">
+        今日已答 <b id="ddone">0</b> 题 ｜ 正确率 <b id="dacc">—</b><br>
+        连续打卡 <b id="streak">0</b> 天 ｜ 累计 <b id="total">0</b> 题 ｜ 题库 <b id="bnum">0</b> 题<span id="bver"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ===== 首页 ===== -->
+<div id="p_home">
+  <div class="card">
+    <button class="btn" id="btnDaily">开始今日 100 题</button>
+    <div class="mrow" style="margin-top:9px">
+      <button class="btn g sm" id="btnCont">继续答题</button>
+      <button class="btn g sm" id="btnWrong">错题本</button>
+    </div>
+    <button class="btn b sm" id="btnCase" style="margin-top:9px">案例题 5 道 →</button>
+  </div>
+
+  <h2 class="sh">考点分类练习</h2>
+  <div class="card" style="padding:8px">
+    <div class="grid" id="catGrid"></div>
+  </div>
+
+  <h2 class="sh">学习统计</h2>
+  <div class="card">
+    <div id="catStat"></div>
+  </div>
+
+  <h2 class="sh">数据</h2>
+  <div class="card">
+    <div class="mrow">
+      <button class="btn g sm" id="btnExport">导出进度码</button>
+      <button class="btn g sm" id="btnImport">导入进度码</button>
+    </div>
+    <textarea id="codeBox" class="hide" rows="3" style="margin-top:9px" placeholder="粘贴进度码后点“确认导入”"></textarea>
+    <button class="btn b sm hide" id="btnDoImport" style="margin-top:8px">确认导入</button>
+    <div class="mrow" style="margin-top:9px">
+      <button class="btn g sm" id="btnResetToday">重置今日</button>
+      <button class="btn g sm" id="btnResetAll">清空全部进度</button>
+    </div>
+    <p class="mini" style="margin-top:10px">进度存在本机浏览器。换设备/换链接时用“导出进度码 → 导入”迁移。</p>
+  </div>
+</div>
+
+<!-- ===== 答题页 ===== -->
+<div id="p_quiz" class="hide">
+  <div class="qhead">
+    <span><span class="cat" id="qcat">分类</span> <span id="qsrc"></span></span>
+    <span><b id="qidx">1</b>/<span id="qlen">100</span> <span id="qfav" style="font-size:16px">☆</span></span>
+  </div>
+  <div class="qbox">
+    <div class="qt" id="qt"></div>
+    <div id="qopts"></div>
+    <div class="exp" id="qexp"></div>
+  </div>
+  <div class="qnav">
+    <button class="btn g sm" id="btnPrev">上一题</button>
+    <button class="btn sm" id="btnNext">下一题</button>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div style="font-size:12.5px;color:var(--ink3);margin-bottom:6px">快速跳转</div>
+    <div id="jump" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+  </div>
+</div>
+
+<!-- ===== 错题本 ===== -->
+<div id="p_wrong" class="hide">
+  <h2 class="sh">错题本（<span id="wcnt">0</span>）</h2>
+  <div class="card">
+    <button class="btn" id="btnWrongGo">开始重做错题</button>
+    <button class="btn g sm" style="margin-top:9px" id="btnWrongClear">清空错题本</button>
+  </div>
+  <div class="list" id="wlist"></div>
+</div>
+
+<!-- ===== 我的 ===== -->
+<div id="p_me" class="hide">
+  <h2 class="sh">打卡日历</h2>
+  <div class="card"><div id="cal"></div></div>
+  <h2 class="sh">收藏（<span id="fcnt">0</span>）</h2>
+  <div class="list" id="flist"></div>
+  <h2 class="sh">关于</h2>
+  <div class="card mini">
+    题库按 2021—2025 五年 75 道真题的考点权重编排：时政理论 24% · 党史党建 19% · 北京市情 13% · 科技人文 12% · 经济 9% · 法律 7% · 公文 5% · 哲学 4% · 三农 3%。<br><br>
+    每日组卷规则：未做过的题优先 → 错题优先 → 已掌握题目补位，每天 100 道。
+  </div>
+</div>
+
+</div>
+
+<nav>
+  <a href="#" class="on" data-p="home"><span class="ic">🏠</span>首页</a>
+  <a href="#" data-p="wrong"><span class="ic">📕</span>错题</a>
+  <a href="#" data-p="fav"><span class="ic">⭐</span>收藏</a>
+  <a href="#" data-p="me"><span class="ic">📊</span>我的</a>
+</nav>
+
+<script>
+/* ===================== 题库 ===================== */
+<script src="bank.js?v=202610170029"></script>
+
+/* ===================== 状态 ===================== */
+const KEY='bjlx_v2';
+let S={done:{}, wrong:{}, fav:{}, daily:{}, streak:0, last:'', total:0, right:0};
+try{ const r=localStorage.getItem(KEY); if(r) S=Object.assign(S,JSON.parse(r)); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function seedRand(seed){ let x=Math.sin(seed)*10000; return x-Math.floor(x); }
+
+const CATS=['时政理论','党史党建','北京市情','科技人文','经济常识','法律行政','公文写作','哲学','三农'];
+const CATW={'时政理论':24,'党史党建':19,'北京市情':13,'科技人文':12,'经济常识':9,'法律行政':7,'公文写作':5,'哲学':4,'三农':3};
+
+/* 每日组卷：未做优先 → 错题 → 补位 */
+const DAILY_N = 100;
+function buildDaily(){
+  const t=today();
+  if(S.daily[t] && S.daily[t].length) return S.daily[t];
+  let ids=[];
+  // 1) 未做过
+  const fresh=BANK.filter(q=>!S.done[q.i]);
+  // 2) 错题
+  const wrongIds=Object.keys(S.wrong).filter(i=>!S.wrong[i].cleared);
+  const wrongPool=BANK.filter(q=>wrongIds.includes(String(q.i))||wrongIds.includes(q.i));
+  // 按权重从未做题抽样
+  const byCat={}; fresh.forEach(q=>{(byCat[q.c]=byCat[q.c]||[]).push(q)});
+  CATS.forEach(c=>{
+    const pool=(byCat[c]||[]).slice();
+    const need=Math.round(DAILY_N*CATW[c]/100);
+    // 稳定洗牌（按日期种子）
+    pool.sort((a,b)=>seedRand(a.i.length+a.i.charCodeAt(0)+t.length)-(seedRand(b.i.length+b.i.charCodeAt(0)+t.length)));
+    ids=ids.concat(pool.slice(0,need).map(q=>q.i));
+  });
+  // 补足：错题
+  wrongPool.forEach(q=>{ if(ids.length<DAILY_N && !ids.includes(q.i)) ids.push(q.i); });
+  // 再补：随机未做
+  fresh.forEach(q=>{ if(ids.length<DAILY_N && !ids.includes(q.i)) ids.push(q.i); });
+  // 仍不足：全库随机
+  if(ids.length<DAILY_N){
+    const rest=BANK.slice().sort((a,b)=>seedRand(a.i.length*3+t.length)-seedRand(b.i.length*3+t.length));
+    rest.forEach(q=>{ if(ids.length<DAILY_N && !ids.includes(q.i)) ids.push(q.i); });
+  }
+  ids=ids.slice(0,DAILY_N);
+  S.daily[t]=ids; save(); return ids;
+}
+
+/* ===================== 渲染 ===================== */
+let cur={list:[],pos:0,mode:''};
+const $=id=>document.getElementById(id);
+function show(p){
+  ['home','quiz','wrong','me'].forEach(x=>$( 'p_'+x ).classList.add('hide'));
+  $('p_'+p).classList.remove('hide');
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===p));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav a').forEach(a=>a.onclick=e=>{e.preventDefault();
+  if(a.dataset.p==='fav'){ show('me'); setTimeout(()=>$('flist').scrollIntoView({behavior:'smooth'}),50); }
+  else show(a.dataset.p);
+  if(a.dataset.p==='home') refreshHome();
+  if(a.dataset.p==='wrong') renderWrong();
+  if(a.dataset.p==='me') renderMe();
+});
+
+function refreshHome(){
+  const t=today(); const ids=buildDaily();
+  const doneIds=ids.filter(i=>S.done[i]);
+  const okIds=doneIds.filter(i=>S.done[i].r===1);
+  $('dn').textContent=doneIds.length; $('dt').textContent=ids.length;
+  $('ddone').textContent=doneIds.length;
+  $('dacc').textContent=doneIds.length? Math.round(okIds.length/doneIds.length*100)+'%':'—';
+  const pct=ids.length? doneIds.length/ids.length:0;
+  $('arc').setAttribute('stroke-dashoffset', 195-195*pct);
+  $('streak').textContent=S.streak||0; $('total').textContent=S.total||0;
+  $('bnum').textContent=BANK.length; $('bver').textContent=window.BANK_VER?('（更新于 '+window.BANK_VER+'）'):'';
+  $('btnDaily').textContent = doneIds.length? '继续今日 100 题（已答 '+doneIds.length+'）':'开始今日 100 题';
+  $('btnCont').textContent = doneIds.length? '继续答题':'继续答题（今日未开始）';
+  // 分类按钮
+  $('catGrid').innerHTML = CATS.map(c=>{
+    const n=BANK.filter(q=>q.c===c).length;
+    return '<div class="it" data-c="'+c+'"><b>'+n+'</b><div class="l">'+c+'</div></div>';
+  }).join('');
+  document.querySelectorAll('#catGrid .it').forEach(el=>el.onclick=()=>startCat(el.dataset.c));
+  // 分类统计
+  $('catStat').innerHTML = CATS.map(c=>{
+    const all=BANK.filter(q=>q.c===c); const did=all.filter(q=>S.done[q.i]);
+    const ok=did.filter(q=>S.done[q.i].r===1).length;
+    const pct=did.length? Math.round(ok/did.length*100):0;
+    return '<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13.5px">'
+      +'<span>'+c+'</span><span style="color:var(--ink3)">'+did.length+'/'+all.length+' · 正确 '+pct+'%</span></div>'
+      +'<div class="bar"><i style="width:'+pct+'%;background:'+(pct>=80?'var(--ok)':pct>=60?'var(--gold)':'var(--no)')+'"></i></div></div>';
+  }).join('');
+}
+
+function start(list,mode,src){ cur={list:list,pos:0,mode:mode,src:src||''}; show('quiz'); renderQ(); }
+
+function renderQ(){
+  const id=cur.list[cur.pos]; const q=BANK.find(x=>x.i===id);
+  if(!q){ show('home'); refreshHome(); return; }
+  $('qcat').textContent=q.c; $('qsrc').textContent=cur.src? '· '+cur.src : '';
+  $('qidx').textContent=cur.pos+1; $('qlen').textContent=cur.list.length;
+  $('qfav').textContent=S.fav[q.i]?'★':'☆'; $('qfav').style.color=S.fav[q.i]?'var(--gold)':'var(--ink3)';
+  $('qt').textContent=q.q;
+  const done=S.done[q.i];
+  $('qopts').innerHTML=q.o.map((o,k)=>{
+    let cls='opt';
+    if(done){
+      cls+=' dis';
+      if(k===q.a) cls+=' right';
+      else if(k===done.p) cls+=' wrong';
+    }else if(done===undefined){}
+    return '<div class="'+cls+'" data-k="'+k+'"><span class="k">'+'ABCD'[k]+'</span><span>'+o+'</span></div>';
+  }).join('');
+  document.querySelectorAll('#qopts .opt').forEach(el=>{
+    el.onclick=()=>{ if(S.done[q.i]) return; pick(q, parseInt(el.dataset.k)); };
+  });
+  const exp=$('qexp');
+  if(done){
+    exp.classList.add('show');
+    exp.innerHTML='<span class="tag '+(done.r===1?'rst':'rstn')+'">'+(done.r===1?'✓ 答对':'✗ 答错')+'</span>'
+      +'<span class="tag pt">考点 · '+q.p+'</span>'
+      +'<div class="an"><b>答案：'+'ABCD'[q.a]+'</b>　'+q.x+'</div>';
+  }else{ exp.classList.remove('show'); exp.innerHTML=''; }
+  $('qfav').onclick=()=>{ if(S.fav[q.i]) delete S.fav[q.i]; else S.fav[q.i]=1; save(); renderQ(); };
+  // 跳转格
+  $('jump').innerHTML=cur.list.map((i,k)=>{
+    const d=S.done[i]; let bg='#f2f4f8',co='var(--ink3)';
+    if(d&&d.r===1){bg='var(--okbg)';co='var(--ok)';} else if(d){bg='var(--nobg)';co='var(--no)';}
+    if(k===cur.pos){bg='var(--red)';co='#fff';}
+    return '<div data-j="'+k+'" style="width:30px;height:30px;line-height:30px;text-align:center;border-radius:7px;background:'+bg+';color:'+co+';font-size:12.5px;font-weight:600;cursor:pointer">'+(k+1)+'</div>';
+  }).join('');
+  document.querySelectorAll('#jump div').forEach(el=>el.onclick=()=>{cur.pos=parseInt(el.dataset.j);renderQ();window.scrollTo(0,0);});
+}
+
+function pick(q,k){
+  const ok = k===q.a;
+  S.done[q.i]={r:ok?1:0,p:k};
+  S.total=(S.total||0)+1; if(ok) S.right=(S.right||0)+1;
+  if(!ok){ S.wrong[q.i]={t:Date.now()}; }
+  // 打卡
+  const t=today();
+  if(S.last!==t){ S.streak=(S.last===yesterday())?(S.streak||0)+1:1; S.last=t; }
+  save(); renderQ();
+}
+function yesterday(){ const d=new Date(Date.now()-86400000); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+$('btnPrev').onclick=()=>{ if(cur.pos>0){cur.pos--;renderQ();window.scrollTo(0,0);} };
+$('btnNext').onclick=()=>{
+  if(cur.pos<cur.list.length-1){cur.pos++;renderQ();window.scrollTo(0,0);}
+  else{ show('home'); refreshHome(); }
+};
+$('btnDaily').onclick=()=>start(buildDaily(),'daily','今日100题');
+$('btnCont').onclick=()=>{ const ids=buildDaily(); const p=ids.findIndex(i=>!S.done[i]); start(ids,'daily','今日100题'); if(p>=0) cur.pos=p; renderQ(); };
+function startCat(c){ const l=BANK.filter(q=>q.c===c).map(q=>q.i); start(l,'cat','专项 · '+c); }
+
+$('btnCase').onclick=()=>{location.href='case.html';};
+
+/* 错题本 */
+function renderWrong(){
+  const ids=Object.keys(S.wrong); $('wcnt').textContent=ids.length;
+  $('wlist').innerHTML = ids.length? ids.map(i=>{
+    const q=BANK.find(x=>x.i==i); if(!q) return '';
+    return '<div class="li" data-w="'+i+'"><div>'+q.q.slice(0,42)+'…<br><span class="tag2">'+q.c+'</span><span class="tag2">'+q.p+'</span></div><div class="r">›</div></div>';
+  }).join('') : '<div class="li" style="color:var(--ink3)">还没有错题，不错 👍</div>';
+  document.querySelectorAll('#wlist .li[data-w]').forEach(el=>el.onclick=()=>{
+    start([el.dataset.w],'wrong','错题重做');
+  });
+}
+$('btnWrong').onclick=()=>{show('wrong');renderWrong();};
+$('btnWrongGo').onclick=()=>{ const ids=Object.keys(S.wrong); if(ids.length) start(ids,'wrong','错题重做'); };
+$('btnWrongClear').onclick=()=>{ if(confirm('确定清空错题本？')){S.wrong={};save();renderWrong();} };
+
+/* 我的 */
+function renderMe(){
+  // 日历
+  const days=Object.keys(S.daily).sort().slice(-21);
+  $('cal').innerHTML='<div style="display:flex;flex-wrap:wrap;gap:5px">'+days.map(d=>{
+    const ids=S.daily[d]||[]; const dn=ids.filter(i=>S.done[i]).length;
+    const full = dn>=Math.min(100,ids.length) && ids.length>0;
+    return '<div style="width:38px;height:38px;border-radius:8px;background:'+(full?'var(--okbg)':'#f2f4f8')+';color:'+(full?'var(--ok)':'var(--ink3)')+';font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+d.slice(8)+'</b><span>'+dn+'</span></div>';
+  }).join('')+'</div><p class="mini">绿色＝当天 100 题全部完成</p>';
+  const fids=Object.keys(S.fav); $('fcnt').textContent=fids.length;
+  $('flist').innerHTML = fids.length? fids.map(i=>{
+    const q=BANK.find(x=>x.i==i); if(!q) return '';
+    return '<div class="li" data-f="'+i+'"><div>'+q.q.slice(0,42)+'…<br><span class="tag2">'+q.c+'</span></div><div class="r">›</div></div>';
+  }).join('') : '<div class="li" style="color:var(--ink3)">还没有收藏</div>';
+  document.querySelectorAll('#flist .li[data-f]').forEach(el=>el.onclick=()=>start([el.dataset.f],'fav','收藏'));
+}
+
+/* 数据 */
+$('btnExport').onclick=()=>{
+  const b=$('codeBox'); b.classList.remove('hide'); b.value=btoa(unescape(encodeURIComponent(JSON.stringify({d:S.done,w:S.wrong,f:S.fav}))));
+  b.select&&b.select(); alert('已生成进度码，长按复制保存');
+};
+$('btnImport').onclick=()=>{ $('codeBox').classList.remove('hide'); $('codeBox').value=''; $('btnDoImport').classList.remove('hide'); };
+$('btnDoImport').onclick=()=>{
+  try{
+    const o=JSON.parse(decodeURIComponent(escape(atob($('codeBox').value.trim()))));
+    S.done=o.d||{}; S.wrong=o.w||{}; S.fav=o.f||{}; save(); alert('导入成功'); refreshHome();
+  }catch(e){ alert('进度码无效'); }
+};
+$('btnResetToday').onclick=()=>{ if(confirm('重置今日完成情况？')){ const t=today(); (S.daily[t]||[]).forEach(i=>delete S.done[i]); delete S.daily[t]; save(); refreshHome(); } };
+$('btnResetAll').onclick=()=>{ if(confirm('清空全部学习进度？不可恢复')){ localStorage.removeItem(KEY); location.reload(); } };
+
+/* 启动 */
+refreshHome();
+</script>
+</body>
+</html>

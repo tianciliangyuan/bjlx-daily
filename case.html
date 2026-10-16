@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1e5799">
+<title>北京市直遴选 · 每日5道案例题</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--red:#b3252c;--blue:#1e5799;--blue2:#16406f;--ink:#1a1d24;--ink2:#3d4553;--ink3:#8a919e;
+--bg:#f5f6f8;--card:#fff;--line:#e6e9ef;--ok:#1c8a52;--okbg:#e8f6ee;--gold:#8a6a1f;--goldbg:#fdf8ec}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.75 "PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+ padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto;padding:0 12px}
+header{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 16px}
+header .t{font-size:17px;font-weight:700;letter-spacing:.5px}
+header .s{font-size:12px;opacity:.85;margin-top:2px}
+.hero{display:flex;align-items:center;gap:14px;margin-top:12px}
+.ring{width:74px;height:74px;flex:0 0 74px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .num b{font-size:19px;line-height:1}.ring .num span{font-size:10px;opacity:.85}
+.hstat{flex:1;font-size:12.5px;line-height:1.9}.hstat b{font-size:16px}
+.card{background:var(--card);border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 3px rgba(20,25,40,.06)}
+.mrow{display:flex;gap:10px}.mrow>*{flex:1}
+.btn{display:block;width:100%;border:0;border-radius:11px;padding:13px;font-size:15.5px;font-weight:600;background:var(--blue);color:#fff;text-align:center;cursor:pointer}
+.btn:active{opacity:.85}
+.btn.g{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.r{background:var(--red)}
+.btn.sm{padding:9px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid .it{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;text-align:center;font-size:13.5px}
+.grid .it b{display:block;font-size:17px;margin-bottom:1px}.grid .it .l{font-size:11.5px;color:var(--ink3)}
+h2.sh{font-size:14px;margin:18px 2px 8px;color:var(--ink2);font-weight:700}
+.qhead{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink3);padding:10px 4px}
+.qhead .cat{background:var(--blue);color:#fff;border-radius:20px;padding:2px 10px;font-size:11.5px}
+.box{background:#fff;border-radius:12px;padding:15px;box-shadow:0 1px 3px rgba(20,25,40,.06)}
+.lbl{font-size:12px;font-weight:700;color:var(--blue);background:#eef3fa;display:inline-block;border-radius:5px;padding:2px 9px;margin-bottom:7px}
+.lbl.g{color:var(--gold);background:var(--goldbg)}
+.lbl.r{color:var(--red);background:#fdecec}
+.sec{margin-bottom:14px}
+.sec .txt{font-size:14.5px;line-height:1.85;white-space:pre-wrap}
+.qt{font-size:15.5px;font-weight:600;line-height:1.8}
+.req{font-size:12.5px;color:var(--red);margin-top:4px}
+textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px;font-size:14.5px;font-family:inherit;line-height:1.7;min-height:120px}
+.reveal{margin-top:12px;border-radius:10px;padding:12px 13px;font-size:14px;line-height:1.85;display:none;white-space:pre-wrap}
+.reveal.show{display:block}
+.reveal.pt{background:#eef3fa}
+.reveal.an{background:var(--goldbg)}
+.reveal.rf{background:var(--okbg)}
+.qnav{display:flex;gap:10px;margin-top:14px}.qnav .btn{flex:1}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:50}
+nav a{flex:1;text-align:center;padding:8px 0 7px;font-size:11px;color:var(--ink3);text-decoration:none}
+nav a.on{color:var(--blue);font-weight:700}
+nav a .ic{display:block;font-size:19px;line-height:1.2}
+.list{background:#fff;border-radius:12px;overflow:hidden}
+.list .li{padding:12px 14px;border-bottom:1px solid var(--line);font-size:14.5px;display:flex;justify-content:space-between;align-items:center}
+.list .li:last-child{border-bottom:0}
+.list .li .r{color:var(--ink3);font-size:12.5px}
+.bar{height:7px;background:#eef0f4;border-radius:4px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:4px}
+.hide{display:none}
+.mini{font-size:12px;color:var(--ink3);line-height:1.7}
+.selftag{display:inline-block;border-radius:6px;padding:3px 10px;font-size:12.5px;margin-right:6px;border:1px solid var(--line);background:#fff;color:var(--ink2)}
+.selftag.on{border-color:var(--ok);background:var(--okbg);color:var(--ok);font-weight:700}
+.timer{font-size:12.5px;color:var(--ink3)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="t">北京市直遴选 · 每日 5 道案例题</div>
+    <div class="s" id="hsub">案例分析 50 分 · 办文办会办事 · 含考点与参考答案</div>
+    <div class="hero">
+      <div class="ring">
+        <svg width="74" height="74"><circle cx="37" cy="37" r="31" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="7"/>
+        <circle id="arc" cx="37" cy="37" r="31" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-dasharray="195" stroke-dashoffset="195"/></svg>
+        <div class="num"><b id="dn">0</b><span>/ <span id="dt">5</span></span></div>
+      </div>
+      <div class="hstat">
+        今日已练 <b id="ddone">0</b> 道 ｜ 自评达标 <b id="dok">0</b> 道<br>
+        连续打卡 <b id="streak">0</b> 天 ｜ 累计 <b id="total">0</b> 道 ｜ 题库 <b id="bnum">0</b> 道
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div id="p_home">
+  <div class="card">
+    <button class="btn" id="btnDaily">开始今日 5 道</button>
+    <div class="mrow" style="margin-top:9px">
+      <button class="btn g sm" id="btnCont">继续练习</button>
+      <button class="btn g sm" id="btnWrong">薄弱环节</button>
+    </div>
+    <div class="mrow" style="margin-top:9px">
+      <button class="btn g sm" id="btnObj">客观题 100 题 →</button>
+    </div>
+  </div>
+
+  <h2 class="sh">按题型练习</h2>
+  <div class="card" style="padding:8px"><div class="grid" id="catGrid"></div></div>
+
+  <h2 class="sh">掌握情况</h2>
+  <div class="card"><div id="catStat"></div></div>
+
+  <h2 class="sh">数据</h2>
+  <div class="card">
+    <div class="mrow">
+      <button class="btn g sm" id="btnExport">导出进度码</button>
+      <button class="btn g sm" id="btnImport">导入进度码</button>
+    </div>
+    <textarea id="codeBox" class="hide" rows="3" style="margin-top:9px" placeholder="粘贴进度码后点确认导入"></textarea>
+    <button class="btn sm hide" id="btnDoImport" style="margin-top:8px">确认导入</button>
+    <div class="mrow" style="margin-top:9px">
+      <button class="btn g sm" id="btnResetToday">重置今日</button>
+      <button class="btn g sm" id="btnResetAll">清空进度</button>
+    </div>
+    <p class="mini" style="margin-top:10px">建议每道限时 15 分钟：先自己写思路，再对照参考答案数要点，用自评记录真实水平。</p>
+  </div>
+</div>
+
+<div id="p_quiz" class="hide">
+  <div class="qhead">
+    <span><span class="cat" id="qcat">题型</span> <span id="qsrc"></span></span>
+    <span><b id="qidx">1</b>/<span id="qlen">5</span> <span class="timer" id="tm"></span></span>
+  </div>
+  <div class="box">
+    <div class="sec"><span class="lbl">背景设定</span><div class="txt" id="qbg"></div></div>
+    <div class="sec"><span class="lbl">材料</span><div class="txt" id="qmat"></div></div>
+    <div class="sec"><span class="lbl r">作答要求</span><div class="qt" id="qq"></div><div class="req" id="qreq"></div></div>
+    <div class="sec"><span class="lbl g">我的作答（自动保存）</span><textarea id="myans" placeholder="先自己写一版思路/答案，写完再看参考答案，效果最好"></textarea><div class="mini" style="margin-top:6px" id="wcount"></div></div>
+    <div class="mrow">
+      <button class="btn g sm" id="btnPt">看考点</button>
+      <button class="btn g sm" id="btnAn">看思路点拨</button>
+    </div>
+    <button class="btn r sm" id="btnRef" style="margin-top:9px">看参考答案</button>
+    <div class="reveal pt" id="rpt"></div>
+    <div class="reveal an" id="ran"></div>
+    <div class="reveal rf" id="rrf"></div>
+    <div class="sec" style="margin-top:14px">
+      <span class="lbl g">自评</span><div style="margin-top:6px">
+        <span class="selftag" data-s="2">完全答出</span>
+        <span class="selftag" data-s="1">部分答出</span>
+        <span class="selftag" data-s="0">没思路</span>
+      </div>
+    </div>
+  </div>
+  <div class="qnav">
+    <button class="btn g sm" id="btnPrev">上一题</button>
+    <button class="btn sm" id="btnNext">下一题</button>
+  </div>
+  <div class="card"><div style="font-size:12.5px;color:var(--ink3);margin-bottom:6px">跳转</div>
+    <div id="jump" style="display:flex;flex-wrap:wrap;gap:5px"></div></div>
+</div>
+
+<div id="p_wrong" class="hide">
+  <h2 class="sh">薄弱环节（自评"部分答出/没思路"）</h2>
+  <div class="card"><button class="btn" id="btnWrongGo">重做薄弱题</button></div>
+  <div class="list" id="wlist"></div>
+</div>
+
+<div id="p_me" class="hide">
+  <h2 class="sh">打卡日历</h2>
+  <div class="card"><div id="cal"></div></div>
+  <h2 class="sh">关于</h2>
+  <div class="card mini">
+    案例题占笔试 50 分，本质只有三类动作：<b>办文、办会、办事</b>。<br><br>
+    题型分布（2021—2025 真题统计）：工作思路/组织协调 8 次 · 公文改错 3 次 · 法定公文写作 3 次 · 应急应变 3 次 · 调研接待 2 次 · 讲话稿发言要点 2 次 · 会议筹备 1 次。<br><br>
+    通用框架：<b>领任务 → 定方案报审批 → 分任务到人 → 抓落实强保障 → 报结果建长效</b>。
+  </div>
+</div>
+
+</div>
+
+<nav>
+  <a href="#" class="on" data-p="home"><span class="ic">🏠</span>首页</a>
+  <a href="#" data-p="wrong"><span class="ic">📕</span>薄弱</a>
+  <a href="#" data-p="me"><span class="ic">📊</span>我的</a>
+</nav>
+
+<script src="case-bank.js?v=202610170029"></script>
+<script>
+
+const KEY='bjlx_case_v1';
+let S={done:{},ans:{},daily:{},streak:0,last:'',total:0,ok:0};
+try{const r=localStorage.getItem(KEY); if(r) S=Object.assign(S,JSON.parse(r));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function yesterday(){const d=new Date(Date.now()-86400000);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function seedRand(s){let x=Math.sin(s)*10000;return x-Math.floor(x);}
+
+const TYPES=[...new Set(CASES.map(c=>c.t))];
+const N=5;
+function buildDaily(){
+  const t=today();
+  if(S.daily[t]&&S.daily[t].length) return S.daily[t];
+  const fresh=CASES.filter(c=>!S.done[c.i]);
+  let ids=[];
+  // 题型轮转：尽量覆盖不同题型
+  const byT={}; fresh.forEach(c=>{(byT[c.t]=byT[c.t]||[]).push(c)});
+  const order=TYPES.slice().sort((a,b)=>seedRand(a.length+t.length)-seedRand(b.length+t.length));
+  order.forEach(tp=>{ const p=(byT[tp]||[]).slice(); if(p.length){ ids.push(p[Math.floor(seedRand(tp.length+t.length)*p.length)].i); } });
+  // 不足从薄弱题补
+  Object.keys(S.done).filter(i=>S.done[i].s<2).forEach(i=>{ if(ids.length<N&&!ids.includes(i)) ids.push(i); });
+  fresh.forEach(c=>{ if(ids.length<N&&!ids.includes(c.i)) ids.push(c.i); });
+  if(ids.length<N){ CASES.forEach(c=>{ if(ids.length<N&&!ids.includes(c.i)) ids.push(c.i); }); }
+  ids=ids.slice(0,N); S.daily[t]=ids; save(); return ids;
+}
+
+const $=id=>document.getElementById(id);
+function show(p){['home','quiz','wrong','me'].forEach(x=>$('p_'+x).classList.add('hide'));$('p_'+p).classList.remove('hide');
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===p)); window.scrollTo(0,0);}
+document.querySelectorAll('nav a').forEach(a=>a.onclick=e=>{e.preventDefault();show(a.dataset.p);
+  if(a.dataset.p==='home')refreshHome(); if(a.dataset.p==='wrong')renderWrong(); if(a.dataset.p==='me')renderMe();});
+
+let cur={list:[],pos:0,src:'',t0:0};
+function refreshHome(){
+  const ids=buildDaily(); const dn=ids.filter(i=>S.done[i]);
+  const ok=dn.filter(i=>S.done[i].s===2);
+  $('dn').textContent=dn.length; $('dt').textContent=ids.length;
+  $('ddone').textContent=dn.length; $('dok').textContent=ok.length;
+  $('arc').setAttribute('stroke-dashoffset',195-195*(ids.length?dn.length/ids.length:0));
+  $('streak').textContent=S.streak||0; $('total').textContent=S.total||0; $('bnum').textContent=CASES.length;
+  $('hsub').textContent='案例分析 50 分 · 办文办会办事'+(window.CASE_VER?(' · 题库更新于 '+window.CASE_VER):'');
+  $('btnDaily').textContent=dn.length?('继续今日 5 道（已 '+dn.length+'）'):'开始今日 5 道';
+  $('catGrid').innerHTML=TYPES.map(tp=>{const n=CASES.filter(c=>c.t===tp).length;
+    return '<div class="it" data-t="'+tp+'"><b>'+n+'</b><div class="l">'+tp+'</div></div>';}).join('');
+  document.querySelectorAll('#catGrid .it').forEach(el=>el.onclick=()=>startType(el.dataset.t));
+  $('catStat').innerHTML=TYPES.map(tp=>{const all=CASES.filter(c=>c.t===tp);const did=all.filter(c=>S.done[c.i]);
+    const ok2=did.filter(c=>S.done[c.i].s===2).length;const pct=did.length?Math.round(ok2/did.length*100):0;
+    return '<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>'+tp+'</span><span style="color:var(--ink3)">'+did.length+'/'+all.length+' · 达标 '+pct+'%</span></div><div class="bar"><i style="width:'+pct+'%;background:'+(pct>=80?'var(--ok)':pct>=60?'var(--gold)':'var(--red)')+'"></i></div></div>';}).join('');
+}
+function start(list,src){cur={list:list,pos:0,src:src||'',t0:Date.now()};show('quiz');renderQ();}
+function renderQ(){
+  const id=cur.list[cur.pos]; const c=CASES.find(x=>x.i===id); if(!c){show('home');refreshHome();return;}
+  $('qcat').textContent=c.t; $('qsrc').textContent=cur.src?('· '+cur.src):'';
+  $('qidx').textContent=cur.pos+1; $('qlen').textContent=cur.list.length;
+  $('qbg').textContent=c.bg||''; $('qmat').textContent=c.m||''; $('qq').textContent=c.q||'';
+  $('qreq').textContent=c.req||'';
+  const ta=$('myans'); ta.value=(S.ans&&S.ans[c.i])||'';
+  ta.oninput=()=>{S.ans=S.ans||{};S.ans[c.i]=ta.value;$('wcount').textContent='已写 '+ta.value.replace(/\s/g,'').length+' 字';save();};
+  $('wcount').textContent=ta.value?('已写 '+ta.value.replace(/\s/g,'').length+' 字'):'';
+  $('rpt').textContent='考点：'+c.pt; $('ran').textContent=c.an; $('rrf').textContent=c.ref;
+  ['rpt','ran','rrf'].forEach(k=>$(k).classList.remove('show'));
+  const d=S.done[c.i];
+  if(d){ $('rpt').classList.add('show'); if(d.o>=1)$('ran').classList.add('show'); if(d.o>=2)$('rrf').classList.add('show'); }
+  document.querySelectorAll('.selftag').forEach(el=>{
+    el.classList.toggle('on', !!(d&&d.s===parseInt(el.dataset.s)));
+    el.onclick=()=>{ setSelf(c, parseInt(el.dataset.s)); };
+  });
+  $('btnPt').onclick=()=>{$('rpt').classList.add('show');markOpen(c,0);};
+  $('btnAn').onclick=()=>{$('rpt').classList.add('show');$('ran').classList.add('show');markOpen(c,1);};
+  $('btnRef').onclick=()=>{$('rpt').classList.add('show');$('ran').classList.add('show');$('rrf').classList.add('show');markOpen(c,2);};
+  $('jump').innerHTML=cur.list.map((i,k)=>{const dd=S.done[i];let bg='#f2f4f8',co='var(--ink3)';
+    if(dd&&dd.s===2){bg='var(--okbg)';co='var(--ok)';}else if(dd){bg='#fdf1f1';co='var(--red)';}
+    if(k===cur.pos){bg='var(--blue)';co='#fff';}
+    return '<div data-j="'+k+'" style="width:34px;height:34px;line-height:34px;text-align:center;border-radius:8px;background:'+bg+';color:'+co+';font-size:12.5px;font-weight:600;cursor:pointer">'+(k+1)+'</div>';}).join('');
+  document.querySelectorAll('#jump div').forEach(el=>el.onclick=()=>{cur.pos=parseInt(el.dataset.j);cur.t0=Date.now();renderQ();window.scrollTo(0,0);});
+  clearInterval(window.__tm); window.__tm=setInterval(()=>{const s=Math.round((Date.now()-cur.t0)/1000);$('tm').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');},1000);
+}
+function markOpen(c,o){ if(!S.done[c.i]){S.done[c.i]={s:-1,o:o};S.total=(S.total||0)+1;
+  const t=today(); if(S.last!==t){S.streak=(S.last===yesterday())?(S.streak||0)+1:1;S.last=t;} }
+  else S.done[c.i].o=Math.max(S.done[c.i].o||0,o); save(); refreshHomeMini(); }
+function setSelf(c,s){ if(!S.done[c.i]) markOpen(c,0);
+  const was=S.done[c.i].s; S.done[c.i].s=s;
+  if(s===2&&was!==2) S.ok=(S.ok||0)+1; if(was===2&&s!==2) S.ok=Math.max(0,(S.ok||0)-1);
+  save(); renderQ(); refreshHomeMini(); }
+function refreshHomeMini(){ $('ddone').textContent=cur.list.filter(i=>S.done[i]).length; }
+$('btnPrev').onclick=()=>{if(cur.pos>0){cur.pos--;cur.t0=Date.now();renderQ();window.scrollTo(0,0);}};
+$('btnNext').onclick=()=>{if(cur.pos<cur.list.length-1){cur.pos++;cur.t0=Date.now();renderQ();window.scrollTo(0,0);}else{show('home');refreshHome();}};
+$('btnDaily').onclick=()=>start(buildDaily(),'今日5道');
+$('btnCont').onclick=()=>{const ids=buildDaily();start(ids,'今日5道');const p=ids.findIndex(i=>!S.done[i]);if(p>=0){cur.pos=p;}renderQ();};
+function startType(tp){start(CASES.filter(c=>c.t===tp).map(c=>c.i),'专项 · '+tp);}
+$('btnObj').onclick=()=>{location.href='index.html';};
+function renderWrong(){
+  const ids=Object.keys(S.done).filter(i=>S.done[i].s<2);
+  $('wlist').innerHTML=ids.length?ids.map(i=>{const c=CASES.find(x=>x.i==i);if(!c)return '';
+    return '<div class="li" data-w="'+i+'"><div>'+c.q.slice(0,40)+'…<br><span class="mini">'+c.t+' · '+c.pt+'</span></div><div class="r">›</div></div>';}).join('')
+    :'<div class="li" style="color:var(--ink3)">暂无薄弱题</div>';
+  document.querySelectorAll('#wlist .li[data-w]').forEach(el=>el.onclick=()=>start([el.dataset.w],'薄弱重做'));
+}
+$('btnWrong').onclick=()=>{show('wrong');renderWrong();};
+$('btnWrongGo').onclick=()=>{const ids=Object.keys(S.done).filter(i=>S.done[i].s<2);if(ids.length)start(ids,'薄弱重做');};
+function renderMe(){
+  const days=Object.keys(S.daily).sort().slice(-21);
+  $('cal').innerHTML='<div style="display:flex;flex-wrap:wrap;gap:5px">'+days.map(d=>{const ids=S.daily[d]||[];
+    const dn=ids.filter(i=>S.done[i]).length; const full=ids.length>0&&dn>=ids.length;
+    return '<div style="width:38px;height:38px;border-radius:8px;background:'+(full?'var(--okbg)':'#f2f4f8')+';color:'+(full?'var(--ok)':'var(--ink3)')+';font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+d.slice(8)+'</b><span>'+dn+'</span></div>';}).join('')+'</div><p class="mini">绿色＝当天 5 道全部完成</p>';
+}
+$('btnExport').onclick=()=>{const b=$('codeBox');b.classList.remove('hide');b.value=btoa(unescape(encodeURIComponent(JSON.stringify({d:S.done,a:S.ans}))));alert('已生成进度码，长按复制');};
+$('btnImport').onclick=()=>{$('codeBox').classList.remove('hide');$('codeBox').value='';$('btnDoImport').classList.remove('hide');};
+$('btnDoImport').onclick=()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($('codeBox').value.trim()))));S.done=o.d||{};S.ans=o.a||{};save();alert('导入成功');refreshHome();}catch(e){alert('进度码无效');}};
+$('btnResetToday').onclick=()=>{if(confirm('重置今日？')){const t=today();(S.daily[t]||[]).forEach(i=>delete S.done[i]);delete S.daily[t];save();refreshHome();}};
+$('btnResetAll').onclick=()=>{if(confirm('清空全部进度？')){localStorage.removeItem(KEY);location.reload();}};
+refreshHome();
+</script>
+</body>
+</html>
