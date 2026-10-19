@@ -138,7 +138,9 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
     <textarea id="codeBox" class="hide" rows="3" style="margin-top:9px" placeholder="粘贴进度码后点“确认导入”"></textarea>
     <button class="btn b sm hide" id="btnDoImport" style="margin-top:8px">确认导入</button>
     <div class="mrow" style="margin-top:9px">
-      <button class="btn g sm" id="btnResetToday">重置今日</button>
+      <div style="margin-top:9px"><div class="mini" style="margin-bottom:5px">每日题量（改后第二天生效，进度与错题都不会丢）</div>
+      <div class="mrow"><button class="btn g sm" data-n="100">100</button><button class="btn g sm" data-n="200">200</button><button class="btn g sm" data-n="300">300</button></div></div>
+      <button class="btn g sm" id="btnResetToday" style="margin-top:9px">重置今日</button>
       <button class="btn g sm" id="btnResetAll">清空全部进度</button>
     </div>
     <p class="mini" style="margin-top:10px">进度存在本机浏览器。换设备/换链接时用“导出进度码 → 导入”迁移。</p>
@@ -198,12 +200,12 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
   <a href="#" data-p="me"><span class="ic">📊</span>我的</a>
 </nav>
 
-<script src="bank.js?v=202610170029"></script>
+<script src="bank.js?v=202610191236"></script>
 <script>
 
 /* ===================== 状态 ===================== */
 const KEY='bjlx_v2';
-let S={done:{}, wrong:{}, fav:{}, daily:{}, streak:0, last:'', total:0, right:0};
+let S={done:{}, wrong:{}, fav:{}, daily:{}, streak:0, last:'', total:0, right:0, n:200};
 try{ const r=localStorage.getItem(KEY); if(r) S=Object.assign(S,JSON.parse(r)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -213,7 +215,7 @@ const CATS=['时政理论','党史党建','北京市情','科技人文','经济�
 const CATW={'时政理论':24,'党史党建':19,'北京市情':13,'科技人文':12,'经济常识':9,'法律行政':7,'公文写作':5,'哲学':4,'三农':3};
 
 /* 每日组卷：未做优先 → 错题 → 补位 */
-const DAILY_N = 100;
+const DAILY_N = (S.n || 200);
 function buildDaily(){
   const t=today();
   if(S.daily[t] && S.daily[t].length) return S.daily[t];
@@ -403,6 +405,9 @@ $('btnResetToday').onclick=()=>{ if(confirm('重置今日完成情况？')){ con
 $('btnResetAll').onclick=()=>{ if(confirm('清空全部学习进度？不可恢复')){ localStorage.removeItem(KEY); location.reload(); } };
 
 /* 启动 */
+document.querySelectorAll('[data-n]').forEach(function(b){
+  b.onclick=function(){ S.n=parseInt(b.dataset.n); save(); alert('每日题量已设为 '+S.n+' 道，明天开始生效。今日组卷不变，进度与错题均已保留。'); };
+});
 refreshHome();
 </script>
 </body>
