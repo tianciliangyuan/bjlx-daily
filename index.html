@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#b3252c">
-<title>北京市直遴选 · 每日100题</title>
+<title>北京市直遴选 · 每日刷题</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -89,14 +90,14 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
 
 <header>
   <div class="wrap">
-    <div class="t">北京市直遴选 · 每日 100 题</div>
+    <div class="t">北京市直遴选 · 每日 <span id="tnum">200</span> 题</div>
     <div class="s" id="hsub">客观题 15 分 · 九大考点模块 · 含考点与解析</div>
     <div class="hero">
       <div class="ring">
         <svg width="74" height="74"><circle cx="37" cy="37" r="31" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="7"/>
         <circle id="arc" cx="37" cy="37" r="31" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"
           stroke-dasharray="195" stroke-dashoffset="195"/></svg>
-        <div class="num"><b id="dn">0</b><span>/ <span id="dt">100</span></span></div>
+        <div class="num"><b id="dn">0</b><span>/ <span id="dt">200</span></span></div>
       </div>
       <div class="hstat">
         今日已答 <b id="ddone">0</b> 题 ｜ 正确率 <b id="dacc">—</b><br>
@@ -200,7 +201,7 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
   <a href="#" data-p="me"><span class="ic">📊</span>我的</a>
 </nav>
 
-<script src="bank.js?v=202610191244"></script>
+<script src="bank.js?v=202610192344"></script>
 <script>
 
 /* ===================== 状态 ===================== */
@@ -275,7 +276,9 @@ function refreshHome(){
   $('arc').setAttribute('stroke-dashoffset', 195-195*pct);
   $('streak').textContent=S.streak||0; $('total').textContent=S.total||0;
   $('bnum').textContent=BANK.length; $('bver').textContent=window.BANK_VER?('（更新于 '+window.BANK_VER+'）'):'';
-  $('btnDaily').textContent = doneIds.length? '继续今日 100 题（已答 '+doneIds.length+'）':'开始今日 100 题';
+  if($('tnum')) $('tnum').textContent=DAILY_N;
+  if($('dt')) $('dt').textContent=DAILY_N;
+  $('btnDaily').textContent = doneIds.length? '继续今日 '+DAILY_N+' 题（已答 '+doneIds.length+'）':'开始今日 '+DAILY_N+' 题';
   $('btnCont').textContent = doneIds.length? '继续答题':'继续答题（今日未开始）';
   // 分类按钮
   $('catGrid').innerHTML = CATS.map(c=>{
@@ -351,8 +354,8 @@ $('btnNext').onclick=()=>{
   if(cur.pos<cur.list.length-1){cur.pos++;renderQ();window.scrollTo(0,0);}
   else{ show('home'); refreshHome(); }
 };
-$('btnDaily').onclick=()=>start(buildDaily(),'daily','今日100题');
-$('btnCont').onclick=()=>{ const ids=buildDaily(); const p=ids.findIndex(i=>!S.done[i]); start(ids,'daily','今日100题'); if(p>=0) cur.pos=p; renderQ(); };
+$('btnDaily').onclick=()=>start(buildDaily(),'daily','今日'+DAILY_N+'题');
+$('btnCont').onclick=()=>{ const ids=buildDaily(); const p=ids.findIndex(i=>!S.done[i]); start(ids,'daily','今日'+DAILY_N+'题'); if(p>=0) cur.pos=p; renderQ(); };
 function startCat(c){ const l=BANK.filter(q=>q.c===c).map(q=>q.i); start(l,'cat','专项 · '+c); }
 
 $('btnCase').onclick=()=>{location.href='case.html';};
@@ -378,9 +381,9 @@ function renderMe(){
   const days=Object.keys(S.daily).sort().slice(-21);
   $('cal').innerHTML='<div style="display:flex;flex-wrap:wrap;gap:5px">'+days.map(d=>{
     const ids=S.daily[d]||[]; const dn=ids.filter(i=>S.done[i]).length;
-    const full = dn>=Math.min(100,ids.length) && ids.length>0;
+    const full = dn>=Math.min(DAILY_N,ids.length) && ids.length>0;
     return '<div style="width:38px;height:38px;border-radius:8px;background:'+(full?'var(--okbg)':'#f2f4f8')+';color:'+(full?'var(--ok)':'var(--ink3)')+';font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+d.slice(8)+'</b><span>'+dn+'</span></div>';
-  }).join('')+'</div><p class="mini">绿色＝当天 100 题全部完成</p>';
+  }).join('')+'</div><p class="mini">绿色＝当天 '+DAILY_N+' 题全部完成</p>';
   const fids=Object.keys(S.fav); $('fcnt').textContent=fids.length;
   $('flist').innerHTML = fids.length? fids.map(i=>{
     const q=BANK.find(x=>x.i==i); if(!q) return '';
