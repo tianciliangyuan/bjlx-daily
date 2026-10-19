@@ -297,7 +297,7 @@ function refreshHome(){
   }).join('');
 }
 
-function start(list,mode,src){ cur={list:list,pos:0,mode:mode,src:src||''}; show('quiz'); renderQ(); }
+function start(list,mode,src,fresh){ cur={list:list,pos:0,mode:mode,src:src||'',fresh:!!fresh,ans:{}}; show('quiz'); renderQ(); }
 
 function renderQ(){
   const id=cur.list[cur.pos]; const q=BANK.find(x=>x.i===id);
@@ -306,7 +306,7 @@ function renderQ(){
   $('qidx').textContent=cur.pos+1; $('qlen').textContent=cur.list.length;
   $('qfav').textContent=S.fav[q.i]?'★':'☆'; $('qfav').style.color=S.fav[q.i]?'var(--gold)':'var(--ink3)';
   $('qt').textContent=q.q;
-  const done=S.done[q.i];
+  const done = cur.fresh ? (cur.ans[id]||null) : (S.done[q.i]||null);
   $('qopts').innerHTML=q.o.map((o,k)=>{
     let cls='opt';
     if(done){
@@ -317,7 +317,7 @@ function renderQ(){
     return '<div class="'+cls+'" data-k="'+k+'"><span class="k">'+'ABCD'[k]+'</span><span>'+o+'</span></div>';
   }).join('');
   document.querySelectorAll('#qopts .opt').forEach(el=>{
-    el.onclick=()=>{ if(S.done[q.i]) return; pick(q, parseInt(el.dataset.k)); };
+    el.onclick=()=>{ if(done) return; pick(q, parseInt(el.dataset.k)); };
   });
   const exp=$('qexp');
   if(done){
@@ -329,7 +329,8 @@ function renderQ(){
   $('qfav').onclick=()=>{ if(S.fav[q.i]) delete S.fav[q.i]; else S.fav[q.i]=1; save(); renderQ(); };
   // 跳转格
   $('jump').innerHTML=cur.list.map((i,k)=>{
-    const d=S.done[i]; let bg='#f2f4f8',co='var(--ink3)';
+    const d = cur.fresh ? (cur.ans[i]||null) : (S.done[i]||null);
+    let bg='#f2f4f8',co='var(--ink3)';
     if(d&&d.r===1){bg='var(--okbg)';co='var(--ok)';} else if(d){bg='var(--nobg)';co='var(--no)';}
     if(k===cur.pos){bg='var(--red)';co='#fff';}
     return '<div data-j="'+k+'" style="width:30px;height:30px;line-height:30px;text-align:center;border-radius:7px;background:'+bg+';color:'+co+';font-size:12.5px;font-weight:600;cursor:pointer">'+(k+1)+'</div>';
@@ -339,9 +340,11 @@ function renderQ(){
 
 function pick(q,k){
   const ok = k===q.a;
-  S.done[q.i]={r:ok?1:0,p:k};
+  const rec={r:ok?1:0,p:k};
+  if(cur && cur.fresh){ cur.ans[q.i]=rec; } else { S.done[q.i]=rec; }
   S.total=(S.total||0)+1; if(ok) S.right=(S.right||0)+1;
   if(!ok){ S.wrong[q.i]={t:Date.now()}; }
+  else if(S.wrong[q.i]){ delete S.wrong[q.i]; }
   // 打卡
   const t=today();
   if(S.last!==t){ S.streak=(S.last===yesterday())?(S.streak||0)+1:1; S.last=t; }
@@ -368,11 +371,11 @@ function renderWrong(){
     return '<div class="li" data-w="'+i+'"><div>'+q.q.slice(0,42)+'…<br><span class="tag2">'+q.c+'</span><span class="tag2">'+q.p+'</span></div><div class="r">›</div></div>';
   }).join('') : '<div class="li" style="color:var(--ink3)">还没有错题，不错 👍</div>';
   document.querySelectorAll('#wlist .li[data-w]').forEach(el=>el.onclick=()=>{
-    start([el.dataset.w],'wrong','错题重做');
+    start([el.dataset.w],'wrong','错题重做',true);
   });
 }
 $('btnWrong').onclick=()=>{show('wrong');renderWrong();};
-$('btnWrongGo').onclick=()=>{ const ids=Object.keys(S.wrong); if(ids.length) start(ids,'wrong','错题重做'); };
+$('btnWrongGo').onclick=()=>{ const ids=Object.keys(S.wrong); if(ids.length) start(ids,'wrong','错题重做',true); };
 $('btnWrongClear').onclick=()=>{ if(confirm('确定清空错题本？')){S.wrong={};save();renderWrong();} };
 
 /* 我的 */
