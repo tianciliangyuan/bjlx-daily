@@ -291,7 +291,11 @@ function markOpen(e){ if(!S.done[e.i]){S.done[e.i]={s:-1};S.total=(S.total||0)+1
 function setSelf(e,s){ markOpen(e);
   const was=S.done[e.i].s; S.done[e.i].s=s;
   if(s===2&&was!==2)S.ok=(S.ok||0)+1; if(was===2&&s!==2)S.ok=Math.max(0,(S.ok||0)-1);
-  save(); renderQ(); }
+  save();
+  // 只更新自评标签，不整体重渲染（否则会把已展开的考点/范文重新收起）
+  document.querySelectorAll('.selftag').forEach(function(el){
+    el.classList.toggle('on', parseInt(el.dataset.s)===s);
+  }); }
 
 $('btnPt').onclick=()=>$('rpt').classList.toggle('show');
 $('btnAn').onclick=()=>$('ran').classList.toggle('show');
