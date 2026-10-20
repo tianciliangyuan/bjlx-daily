@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1e5799">
-<title>北京市直遴选 · 每日5道案例题</title>
+<title>北京市直遴选 · 案例题（主观题）</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--red:#b3252c;--blue:#1e5799;--blue2:#16406f;--ink:#1a1d24;--ink2:#3d4553;--ink3:#8a919e;
@@ -72,7 +72,7 @@ nav a .ic{display:block;font-size:19px;line-height:1.2}
 
 <header>
   <div class="wrap">
-    <div class="t">北京市直遴选 · 每日 5 道案例题</div>
+    <div class="t">北京市直遴选 · 每日 <span id="tnum">5</span> 道案例题</div>
     <div class="s" id="hsub">案例分析 50 分 · 办文办会办事 · 含考点与参考答案</div>
     <div class="hero">
       <div class="ring">
@@ -116,6 +116,8 @@ nav a .ic{display:block;font-size:19px;line-height:1.2}
     </div>
     <textarea id="codeBox" class="hide" rows="3" style="margin-top:9px" placeholder="粘贴进度码后点确认导入"></textarea>
     <button class="btn sm hide" id="btnDoImport" style="margin-top:8px">确认导入</button>
+    <div style="margin-top:12px"><div class="mini" style="margin-bottom:5px">每天练几道（「全部」＝刷完整个案例库，切换立即生效）</div>
+      <div class="mrow"><button class="btn g sm" data-cn="0">全部</button><button class="btn g sm" data-cn="5">5</button><button class="btn g sm" data-cn="10">10</button><button class="btn g sm" data-cn="20">20</button></div></div>
     <div class="mrow" style="margin-top:9px">
       <button class="btn g sm" id="btnResetToday">重置今日</button>
       <button class="btn g sm" id="btnResetAll">清空进度</button>
@@ -187,7 +189,7 @@ nav a .ic{display:block;font-size:19px;line-height:1.2}
 <script>
 
 const KEY='bjlx_case_v1';
-let S={done:{},ans:{},daily:{},streak:0,last:'',total:0,ok:0};
+let S={done:{},ans:{},daily:{},streak:0,last:'',total:0,ok:0,cn:0};
 try{const r=localStorage.getItem(KEY); if(r) S=Object.assign(S,JSON.parse(r));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -195,12 +197,21 @@ function yesterday(){const d=new Date(Date.now()-86400000);return d.getFullYear(
 function seedRand(s){let x=Math.sin(s)*10000;return x-Math.floor(x);}
 
 const TYPES=[...new Set(CASES.map(c=>c.t))];
-const N=5;
+/* 题量：S.cn===0 表示「全部」（整库）。let + applyN()，切档位后立即重算 */
+let N=5;
+function applyN(){ N = (S.cn===0) ? CASES.length : (S.cn || 5); }
+applyN();
 function buildDaily(){
   const t=today();
-  if(S.daily[t]&&S.daily[t].length) return S.daily[t];
+  // 全部模式：始终按「未做在前、已做在后」重建，题库新增的案例自动进来
+  if(N>=CASES.length){
+    const allids = CASES.filter(c=>!S.done[c.i]).map(c=>c.i).concat(CASES.filter(c=>S.done[c.i]).map(c=>c.i));
+    S.daily[t]=allids; save(); return allids;
+  }
+  // 数量模式：沿用今日已有组卷（保住进度），再按当前档位补齐或裁剪
+  let ids=(S.daily[t]||[]).filter(id=>CASES.some(c=>c.i===id));
+  if(!ids.length){
   const fresh=CASES.filter(c=>!S.done[c.i]);
-  let ids=[];
   // 题型轮转：尽量覆盖不同题型
   const byT={}; fresh.forEach(c=>{(byT[c.t]=byT[c.t]||[]).push(c)});
   const order=TYPES.slice().sort((a,b)=>seedRand(a.length+t.length)-seedRand(b.length+t.length));
@@ -209,7 +220,25 @@ function buildDaily(){
   Object.keys(S.done).filter(i=>S.done[i].s<2).forEach(i=>{ if(ids.length<N&&!ids.includes(i)) ids.push(i); });
   fresh.forEach(c=>{ if(ids.length<N&&!ids.includes(c.i)) ids.push(c.i); });
   if(ids.length<N){ CASES.forEach(c=>{ if(ids.length<N&&!ids.includes(c.i)) ids.push(c.i); }); }
-  ids=ids.slice(0,N); S.daily[t]=ids; save(); return ids;
+  ids=ids.slice(0,N);
+  }
+  // 与当前档位对齐
+  if(ids.length>N){
+    // 档位调小：从尾部裁掉【未做过的】，已做的必须保留
+    const out=ids.slice(); let over=out.length-N;
+    for(let k=out.length-1;k>=0&&over>0;k--){ if(!S.done[out[k]]){ out.splice(k,1); over--; } }
+    ids=out;
+  }else if(ids.length<N){
+    // 题库变大或档位调大：优先补未做过的
+    const inList={}; ids.forEach(i=>{inList[i]=1;});
+    const add=CASES.filter(c=>!S.done[c.i] && !inList[c.i]).map(c=>c.i);
+    ids=ids.concat(add.slice(0,N-ids.length));
+    if(ids.length<N){
+      const add2=CASES.filter(c=>!inList[c.i]).map(c=>c.i);
+      ids=ids.concat(add2.slice(0,N-ids.length));
+    }
+  }
+  S.daily[t]=ids; save(); return ids;
 }
 
 const $=id=>document.getElementById(id);
@@ -227,7 +256,9 @@ function refreshHome(){
   $('arc').setAttribute('stroke-dashoffset',195-195*(ids.length?dn.length/ids.length:0));
   $('streak').textContent=S.streak||0; $('total').textContent=S.total||0; $('bnum').textContent=CASES.length;
   $('hsub').textContent='案例分析 50 分 · 办文办会办事'+(window.CASE_VER?(' · 题库更新于 '+window.CASE_VER):'');
-  $('btnDaily').textContent=dn.length?('继续今日 5 道（已 '+dn.length+'）'):'开始今日 5 道';
+  if($('tnum')) $('tnum').textContent=ids.length;
+  $('btnDaily').textContent=dn.length?('继续今日 '+ids.length+' 道（已 '+dn.length+'）'):'开始今日 '+ids.length+' 道';
+  if(typeof syncN==='function') syncN();
   $('catGrid').innerHTML=TYPES.map(tp=>{const n=CASES.filter(c=>c.t===tp).length;
     return '<div class="it" data-t="'+tp+'"><b>'+n+'</b><div class="l">'+tp+'</div></div>';}).join('');
   document.querySelectorAll('#catGrid .it').forEach(el=>el.onclick=()=>startType(el.dataset.t));
@@ -273,8 +304,8 @@ function setSelf(c,s){ if(!S.done[c.i]) markOpen(c,0);
 function refreshHomeMini(){ $('ddone').textContent=cur.list.filter(i=>S.done[i]).length; }
 $('btnPrev').onclick=()=>{if(cur.pos>0){cur.pos--;cur.t0=Date.now();renderQ();window.scrollTo(0,0);}};
 $('btnNext').onclick=()=>{if(cur.pos<cur.list.length-1){cur.pos++;cur.t0=Date.now();renderQ();window.scrollTo(0,0);}else{show('home');refreshHome();}};
-$('btnDaily').onclick=()=>start(buildDaily(),'今日5道');
-$('btnCont').onclick=()=>{const ids=buildDaily();start(ids,'今日5道');const p=ids.findIndex(i=>!S.done[i]);if(p>=0){cur.pos=p;}renderQ();};
+$('btnDaily').onclick=()=>{const L=buildDaily();start(L,'今日'+L.length+'道');};
+$('btnCont').onclick=()=>{const ids=buildDaily();start(ids,'今日'+ids.length+'道');const p=ids.findIndex(i=>!S.done[i]);if(p>=0){cur.pos=p;}renderQ();};
 function startType(tp){start(CASES.filter(c=>c.t===tp).map(c=>c.i),'专项 · '+tp);}
 $('btnObj').onclick=()=>{location.href='index.html';};
 function renderWrong(){
@@ -290,13 +321,33 @@ function renderMe(){
   const days=Object.keys(S.daily).sort().slice(-21);
   $('cal').innerHTML='<div style="display:flex;flex-wrap:wrap;gap:5px">'+days.map(d=>{const ids=S.daily[d]||[];
     const dn=ids.filter(i=>S.done[i]).length; const full=ids.length>0&&dn>=ids.length;
-    return '<div style="width:38px;height:38px;border-radius:8px;background:'+(full?'var(--okbg)':'#f2f4f8')+';color:'+(full?'var(--ok)':'var(--ink3)')+';font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+d.slice(8)+'</b><span>'+dn+'</span></div>';}).join('')+'</div><p class="mini">绿色＝当天 5 道全部完成</p>';
+    return '<div style="width:38px;height:38px;border-radius:8px;background:'+(full?'var(--okbg)':'#f2f4f8')+';color:'+(full?'var(--ok)':'var(--ink3)')+';font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center"><b>'+d.slice(8)+'</b><span>'+dn+'</span></div>';}).join('')+'</div><p class="mini">绿色＝当天 '+N+' 道全部完成</p>';
 }
-$('btnExport').onclick=()=>{const b=$('codeBox');b.classList.remove('hide');b.value=btoa(unescape(encodeURIComponent(JSON.stringify({d:S.done,a:S.ans}))));alert('已生成进度码，长按复制');};
+$('btnExport').onclick=()=>{const b=$('codeBox');b.classList.remove('hide');b.value=btoa(unescape(encodeURIComponent(JSON.stringify({d:S.done,a:S.ans,cn:S.cn}))));alert('已生成进度码，长按复制');};
 $('btnImport').onclick=()=>{$('codeBox').classList.remove('hide');$('codeBox').value='';$('btnDoImport').classList.remove('hide');};
-$('btnDoImport').onclick=()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($('codeBox').value.trim()))));S.done=o.d||{};S.ans=o.a||{};save();alert('导入成功');refreshHome();}catch(e){alert('进度码无效');}};
+$('btnDoImport').onclick=()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($('codeBox').value.trim()))));S.done=o.d||{};S.ans=o.a||{};if(o.cn!==undefined)S.cn=o.cn;applyN();save();alert('导入成功');refreshHome();}catch(e){alert('进度码无效');}};
 $('btnResetToday').onclick=()=>{if(confirm('重置今日？')){const t=today();(S.daily[t]||[]).forEach(i=>delete S.done[i]);delete S.daily[t];save();refreshHome();}};
 $('btnResetAll').onclick=()=>{if(confirm('清空全部进度？')){localStorage.removeItem(KEY);location.reload();}};
+
+/* 题量档位 */
+function syncN(){
+  document.querySelectorAll('[data-cn]').forEach(function(b){
+    var on=(parseInt(b.dataset.cn)===S.cn);
+    b.style.background = on ? 'var(--red)' : '';
+    b.style.color = on ? '#fff' : '';
+    b.style.borderColor = on ? 'var(--red)' : '';
+  });
+}
+document.querySelectorAll('[data-cn]').forEach(function(b){
+  b.onclick=function(){
+    var v=parseInt(b.dataset.cn); S.cn=v; applyN(); save();
+    var ids=buildDaily();
+    var label=(v===0)?('全部（案例库 '+CASES.length+' 道）'):(v+' 道');
+    alert('每天题量已设为 '+label+'，今日组卷已更新为 '+ids.length+' 道。已练记录与薄弱题都不会丢。');
+    syncN(); refreshHome();
+  };
+});
+syncN();
 refreshHome();
 </script>
 </body>
