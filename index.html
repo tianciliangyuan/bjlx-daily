@@ -216,7 +216,10 @@ const CATS=['时政理论','党史党建','北京市情','科技人文','经济�
 const CATW={'时政理论':24,'党史党建':19,'北京市情':13,'科技人文':12,'经济常识':9,'法律行政':7,'公文写作':5,'哲学':4,'三农':3};
 
 /* 每日组卷：未做优先 → 错题 → 补位 */
-const DAILY_N = (S.n===0) ? BANK.length : (S.n || 200);
+/* 题量：S.n===0 表示「全部」（整库）。用 let + applyN()，切换档位后能立刻重算 */
+let DAILY_N = 200;
+function applyN(){ DAILY_N = (S.n===0) ? BANK.length : (S.n || 200); }
+applyN();
 function buildDaily(){
   const t=today();
   if(S.daily[t] && S.daily[t].length) return S.daily[t];
@@ -410,7 +413,7 @@ $('btnImport').onclick=()=>{ $('codeBox').classList.remove('hide'); $('codeBox')
 $('btnDoImport').onclick=()=>{
   try{
     const o=JSON.parse(decodeURIComponent(escape(atob($('codeBox').value.trim()))));
-    S.done=o.d||{}; S.wrong=o.w||{}; S.fav=o.f||{}; save(); alert('导入成功'); refreshHome();
+    S.done=o.d||{}; S.wrong=o.w||{}; S.fav=o.f||{}; if(o.n!==undefined) S.n=o.n; applyN(); save(); alert('导入成功'); refreshHome();
   }catch(e){ alert('进度码无效'); }
 };
 $('btnResetToday').onclick=()=>{ if(confirm('重置今日完成情况？')){ const t=today(); (S.daily[t]||[]).forEach(i=>delete S.done[i]); delete S.daily[t]; save(); refreshHome(); } };
@@ -427,7 +430,7 @@ function syncN(){
 }
 document.querySelectorAll('[data-n]').forEach(function(b){
   b.onclick=function(){
-    var v=parseInt(b.dataset.n); S.n=v; save();
+    var v=parseInt(b.dataset.n); S.n=v; applyN(); save();
     var t=today();
     var answered=(S.daily[t]||[]).filter(function(i){return S.done[i];}).length;
     var label = (v===0) ? ('全部（题库 '+BANK.length+' 题）') : (v+' 道');
