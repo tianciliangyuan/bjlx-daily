@@ -222,13 +222,15 @@ function applyN(){ DAILY_N = (S.n===0) ? BANK.length : (S.n || 200); }
 applyN();
 function buildDaily(){
   const t=today();
-  if(S.daily[t] && S.daily[t].length) return S.daily[t];
-  let ids=[];
-  // 0) 全部模式：整库都做，未做的排前面，做过的排后面
+  // 0) 全部模式：始终按「未做在前、已做在后」重排。题库新增的题会自动进来，
+  //    不会出现「题库涨到 607 但今日组卷还停在 200」的情况。
   if(DAILY_N>=BANK.length){
-    ids = BANK.filter(q=>!S.done[q.i]).map(q=>q.i).concat(BANK.filter(q=>S.done[q.i]).map(q=>q.i));
-    S.daily[t]=ids; save(); return ids;
+    const allids = BANK.filter(q=>!S.done[q.i]).map(q=>q.i).concat(BANK.filter(q=>S.done[q.i]).map(q=>q.i));
+    S.daily[t]=allids; save(); return allids;
   }
+  // 1) 数量模式：沿用今日已有组卷（保住已答进度），再按当前档位补齐或裁剪
+  let ids=(S.daily[t]||[]).filter(id=>BANK.some(q=>q.i===id));
+  if(!ids.length){
   // 1) 未做过
   const fresh=BANK.filter(q=>!S.done[q.i]);
   // 2) 错题
@@ -253,6 +255,23 @@ function buildDaily(){
     rest.forEach(q=>{ if(ids.length<DAILY_N && !ids.includes(q.i)) ids.push(q.i); });
   }
   ids=ids.slice(0,DAILY_N);
+  }
+  // 与当前档位对齐
+  if(ids.length>DAILY_N){
+    // 档位调小：从尾部裁掉【未答过】的，已答的必须保留
+    const out=ids.slice(); let over=out.length-DAILY_N;
+    for(let k=out.length-1;k>=0&&over>0;k--){ if(!S.done[out[k]]){ out.splice(k,1); over--; } }
+    ids=out;
+  }else if(ids.length<DAILY_N){
+    // 题库变大或档位调大：优先补未做过的
+    const inList={}; ids.forEach(i=>{inList[i]=1;});
+    const add=BANK.filter(q=>!S.done[q.i] && !inList[q.i]).map(q=>q.i);
+    ids=ids.concat(add.slice(0,DAILY_N-ids.length));
+    if(ids.length<DAILY_N){
+      const add2=BANK.filter(q=>!inList[q.i]).map(q=>q.i);
+      ids=ids.concat(add2.slice(0,DAILY_N-ids.length));
+    }
+  }
   S.daily[t]=ids; save(); return ids;
 }
 
@@ -285,9 +304,9 @@ function refreshHome(){
   $('streak').textContent=S.streak||0; $('total').textContent=S.total||0;
   $('bnum').textContent=BANK.length; $('bver').textContent=window.BANK_VER?('（更新于 '+window.BANK_VER+'）'):'';
   if(typeof syncN==='function') syncN();
-  if($('tnum')) $('tnum').textContent=DAILY_N;
-  if($('dt')) $('dt').textContent=DAILY_N;
-  $('btnDaily').textContent = doneIds.length? '继续今日 '+DAILY_N+' 题（已答 '+doneIds.length+'）':'开始今日 '+DAILY_N+' 题';
+  if($('tnum')) $('tnum').textContent=ids.length;
+  if($('dt')) $('dt').textContent=ids.length;
+  $('btnDaily').textContent = doneIds.length? '继续今日 '+ids.length+' 题（已答 '+doneIds.length+'）':'开始今日 '+ids.length+' 题';
   $('btnCont').textContent = doneIds.length? '继续答题':'继续答题（今日未开始）';
   // 分类按钮
   $('catGrid').innerHTML = CATS.map(c=>{
@@ -366,8 +385,8 @@ $('btnNext').onclick=()=>{
   if(cur.pos<cur.list.length-1){cur.pos++;renderQ();window.scrollTo(0,0);}
   else{ show('home'); refreshHome(); }
 };
-$('btnDaily').onclick=()=>start(buildDaily(),'daily','今日'+DAILY_N+'题');
-$('btnCont').onclick=()=>{ const ids=buildDaily(); const p=ids.findIndex(i=>!S.done[i]); start(ids,'daily','今日'+DAILY_N+'题'); if(p>=0) cur.pos=p; renderQ(); };
+$('btnDaily').onclick=()=>{var L=buildDaily(); start(L,'daily','今日'+L.length+'题');};
+$('btnCont').onclick=()=>{ const ids=buildDaily(); const p=ids.findIndex(i=>!S.done[i]); start(ids,'daily','今日'+ids.length+'题'); if(p>=0) cur.pos=p; renderQ(); };
 function startCat(c){ const l=BANK.filter(q=>q.c===c).map(q=>q.i); start(l,'cat','专项 · '+c); }
 
 $('btnCase').onclick=()=>{location.href='case.html';};
@@ -431,11 +450,10 @@ function syncN(){
 document.querySelectorAll('[data-n]').forEach(function(b){
   b.onclick=function(){
     var v=parseInt(b.dataset.n); S.n=v; applyN(); save();
-    var t=today();
-    var answered=(S.daily[t]||[]).filter(function(i){return S.done[i];}).length;
+    // 立即按新档位重排今日组卷（已答的题目与错题全部保留）
+    var ids=buildDaily();
     var label = (v===0) ? ('全部（题库 '+BANK.length+' 题）') : (v+' 道');
-    if(answered===0){ delete S.daily[t]; save(); alert('题量已设为 '+label+'，今日组卷已立即更新。进度与错题都不会丢。'); }
-    else { alert('题量已设为 '+label+'。你今天已答 '+answered+' 题，为不重复组卷，明日生效；想立刻生效请点「重置今日」。'); }
+    alert('题量已设为 '+label+'，今日组卷已更新为 '+ids.length+' 题。已答记录与错题本都不会丢。');
     syncN(); refreshHome();
   };
 });
