@@ -99,6 +99,7 @@ nav a .ic{display:block;font-size:19px;line-height:1.2}
     </div>
     <div class="mrow" style="margin-top:9px">
       <button class="btn g sm" id="btnObj">客观题 →</button>
+      <button class="btn g sm" id="btnEssay">大作文 →</button>
     </div>
   </div>
 
@@ -308,6 +309,7 @@ $('btnDaily').onclick=()=>{const L=buildDaily();start(L,'今日'+L.length+'道')
 $('btnCont').onclick=()=>{const ids=buildDaily();start(ids,'今日'+ids.length+'道');const p=ids.findIndex(i=>!S.done[i]);if(p>=0){cur.pos=p;}renderQ();};
 function startType(tp){start(CASES.filter(c=>c.t===tp).map(c=>c.i),'专项 · '+tp);}
 $('btnObj').onclick=()=>{location.href='index.html';};
+$('btnEssay').onclick=()=>{location.href='essay.html';};
 function renderWrong(){
   const ids=Object.keys(S.done).filter(i=>S.done[i].s<2);
   $('wlist').innerHTML=ids.length?ids.map(i=>{const c=CASES.find(x=>x.i==i);if(!c)return '';
