@@ -139,8 +139,8 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
     <textarea id="codeBox" class="hide" rows="3" style="margin-top:9px" placeholder="粘贴进度码后点“确认导入”"></textarea>
     <button class="btn b sm hide" id="btnDoImport" style="margin-top:8px">确认导入</button>
     <div class="mrow" style="margin-top:9px">
-      <div style="margin-top:9px"><div class="mini" style="margin-bottom:5px">每日题量（改后第二天生效，进度与错题都不会丢）</div>
-      <div class="mrow"><button class="btn g sm" data-n="100">100</button><button class="btn g sm" data-n="200">200</button><button class="btn g sm" data-n="300">300</button></div></div>
+      <div style="margin-top:9px"><div class="mini" style="margin-bottom:5px">题量（「全部」＝刷完整题库，今天没答过就立刻生效）</div>
+      <div class="mrow"><button class="btn g sm" data-n="0">全部</button><button class="btn g sm" data-n="100">100</button><button class="btn g sm" data-n="200">200</button><button class="btn g sm" data-n="300">300</button></div></div>
       <button class="btn g sm" id="btnResetToday" style="margin-top:9px">重置今日</button>
       <button class="btn g sm" id="btnResetAll">清空全部进度</button>
     </div>
@@ -201,12 +201,12 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
   <a href="#" data-p="me"><span class="ic">📊</span>我的</a>
 </nav>
 
-<script src="bank.js?v=202610192344"></script>
+<script src="bank.js?v=202610200911"></script>
 <script>
 
 /* ===================== 状态 ===================== */
 const KEY='bjlx_v2';
-let S={done:{}, wrong:{}, fav:{}, daily:{}, streak:0, last:'', total:0, right:0, n:200};
+let S={done:{}, wrong:{}, fav:{}, daily:{}, streak:0, last:'', total:0, right:0, n:0};
 try{ const r=localStorage.getItem(KEY); if(r) S=Object.assign(S,JSON.parse(r)); }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -216,11 +216,16 @@ const CATS=['时政理论','党史党建','北京市情','科技人文','经济�
 const CATW={'时政理论':24,'党史党建':19,'北京市情':13,'科技人文':12,'经济常识':9,'法律行政':7,'公文写作':5,'哲学':4,'三农':3};
 
 /* 每日组卷：未做优先 → 错题 → 补位 */
-const DAILY_N = (S.n || 200);
+const DAILY_N = (S.n===0) ? BANK.length : (S.n || 200);
 function buildDaily(){
   const t=today();
   if(S.daily[t] && S.daily[t].length) return S.daily[t];
   let ids=[];
+  // 0) 全部模式：整库都做，未做的排前面，做过的排后面
+  if(DAILY_N>=BANK.length){
+    ids = BANK.filter(q=>!S.done[q.i]).map(q=>q.i).concat(BANK.filter(q=>S.done[q.i]).map(q=>q.i));
+    S.daily[t]=ids; save(); return ids;
+  }
   // 1) 未做过
   const fresh=BANK.filter(q=>!S.done[q.i]);
   // 2) 错题
@@ -276,6 +281,7 @@ function refreshHome(){
   $('arc').setAttribute('stroke-dashoffset', 195-195*pct);
   $('streak').textContent=S.streak||0; $('total').textContent=S.total||0;
   $('bnum').textContent=BANK.length; $('bver').textContent=window.BANK_VER?('（更新于 '+window.BANK_VER+'）'):'';
+  if(typeof syncN==='function') syncN();
   if($('tnum')) $('tnum').textContent=DAILY_N;
   if($('dt')) $('dt').textContent=DAILY_N;
   $('btnDaily').textContent = doneIds.length? '继续今日 '+DAILY_N+' 题（已答 '+doneIds.length+'）':'开始今日 '+DAILY_N+' 题';
@@ -411,9 +417,26 @@ $('btnResetToday').onclick=()=>{ if(confirm('重置今日完成情况？')){ con
 $('btnResetAll').onclick=()=>{ if(confirm('清空全部学习进度？不可恢复')){ localStorage.removeItem(KEY); location.reload(); } };
 
 /* 启动 */
+function syncN(){
+  document.querySelectorAll('[data-n]').forEach(function(b){
+    var on = (parseInt(b.dataset.n)===S.n);
+    b.style.background = on ? 'var(--red)' : '';
+    b.style.color = on ? '#fff' : '';
+    b.style.borderColor = on ? 'var(--red)' : '';
+  });
+}
 document.querySelectorAll('[data-n]').forEach(function(b){
-  b.onclick=function(){ S.n=parseInt(b.dataset.n); save(); alert('每日题量已设为 '+S.n+' 道，明天开始生效。今日组卷不变，进度与错题均已保留。'); };
+  b.onclick=function(){
+    var v=parseInt(b.dataset.n); S.n=v; save();
+    var t=today();
+    var answered=(S.daily[t]||[]).filter(function(i){return S.done[i];}).length;
+    var label = (v===0) ? ('全部（题库 '+BANK.length+' 题）') : (v+' 道');
+    if(answered===0){ delete S.daily[t]; save(); alert('题量已设为 '+label+'，今日组卷已立即更新。进度与错题都不会丢。'); }
+    else { alert('题量已设为 '+label+'。你今天已答 '+answered+' 题，为不重复组卷，明日生效；想立刻生效请点「重置今日」。'); }
+    syncN(); refreshHome();
+  };
 });
+syncN();
 refreshHome();
 </script>
 </body>
