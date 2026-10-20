@@ -117,7 +117,10 @@ input,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding
       <button class="btn g sm" id="btnCont">继续答题</button>
       <button class="btn g sm" id="btnWrong">错题本</button>
     </div>
-    <button class="btn b sm" id="btnCase" style="margin-top:9px">案例题 5 道 →</button>
+    <div class="mrow" style="margin-top:9px">
+      <button class="btn g sm" id="btnCase">案例题 →</button>
+      <button class="btn g sm" id="btnEssay">大作文 →</button>
+    </div>
   </div>
 
   <h2 class="sh">考点分类练习</h2>
@@ -390,6 +393,7 @@ $('btnCont').onclick=()=>{ const ids=buildDaily(); const p=ids.findIndex(i=>!S.d
 function startCat(c){ const l=BANK.filter(q=>q.c===c).map(q=>q.i); start(l,'cat','专项 · '+c); }
 
 $('btnCase').onclick=()=>{location.href='case.html';};
+$('btnEssay').onclick=()=>{location.href='essay.html';};
 
 /* 错题本 */
 function renderWrong(){
