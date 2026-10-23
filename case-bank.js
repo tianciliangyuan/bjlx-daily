@@ -34,4 +34,4 @@ window.CASES = [
 
 ];
 
-window.CASE_VER="2026-10-20";
+window.CASE_VER="2026-10-23";
